@@ -1,6 +1,5 @@
 package answers
 
-import answers.Cell.turnRight
 import utils.FileHandler.readFile
 
 import scala.annotation.tailrec
@@ -8,6 +7,12 @@ import scala.annotation.tailrec
 case class LoopException() extends Exception("Loop!!!")
 
 enum Direction(val dx: Int, val dy: Int):
+  def turnRight: Direction = this match
+    case Up => Right
+    case Down => Left
+    case Right => Down
+    case Left => Up
+  
   case Up extends Direction(0, -1)
   case Down extends Direction(0, 1)
   case Right extends Direction(1, 0)
@@ -30,12 +35,6 @@ object Cell {
     case '.' | '^' => Open
     case '#' => Wall
     case _ => throw Exception("wtf!!!")
-
-  def turnRight(direction: Direction): Direction = direction match
-    case Direction.Up => Direction.Right
-    case Direction.Down => Direction.Left
-    case Direction.Right => Direction.Down
-    case Direction.Left => Direction.Up
 }
 
 case class Location(x: Int, y: Int, direction: Direction)
@@ -101,7 +100,7 @@ object daySix {
       val (newX, newY) = (start.x + start.direction.dx, start.y + start.direction.dy)
       grid(newY)(newX) match
         case Cell.Open => Location(newX, newY, start.direction)
-        case Cell.Wall => Location(start.x, start.y, turnRight(start.direction))
+        case Cell.Wall => Location(start.x, start.y, start.direction.turnRight)
     }
 
     computePath(grid, newLocation, newPath)
