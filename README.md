@@ -1,3 +1,3 @@
 # Advent Of Code
 
-These are my solutions to the 2024 advent of code in Scala
+These are my solutions to Advent Of Code in Scala

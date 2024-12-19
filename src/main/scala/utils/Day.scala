@@ -2,6 +2,7 @@ package utils
 
 enum Year(val name: String):
   case Year24 extends Year("2024")
+  case Year17 extends Year("2017")
 
 abstract class Day[A, B, C](year: Year, day: Int) {
   private def filePath : String = s"year${year.name}/day$day.txt"
