@@ -1,12 +1,13 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.Day
+import utils.Year.Year24
 
 import scala.annotation.tailrec
 
 case class Guard(x: Int, y: Int, dx: Int, dy: Int)
 
-object day14 {
+object day14 extends Day[Seq[Guard], Int, Int](Year24, 14) {
 
   private val sample = """p=0,4 v=3,-3
                          |p=6,3 v=-1,-3
@@ -31,7 +32,7 @@ object day14 {
 
   private val inputRegex = "p=(\\d+),(\\d+) v=(-?\\d+),(-?\\d+)".r
 
-  private def parseInput(input: String): Seq[Guard] = input
+  def parseInput(input: String): Seq[Guard] = input
     .linesIterator
     .map(line =>
       val Seq(x, y, dx, dy) = inputRegex.findFirstMatchIn(line).get.subgroups.map(_.toInt)
@@ -44,6 +45,8 @@ object day14 {
     Guard(if (newX < 0) width + newX else newX, if (newY < 0) height + newY else newY, guard.dx, guard.dy)
   }
 
+  override def partOne(guards: Seq[Guard]): Int = partOne(guards, inputWidth, inputHeight)
+
   private def partOne(guards: Seq[Guard], width: Int, height: Int): Int = {
     val updated = guards.map(guard => moveGuard(guard, 100, width, height))
 
@@ -54,6 +57,8 @@ object day14 {
 
     q1 * q2 * q3 * q4
   }
+
+  override def partTwo(guards: Seq[Guard]): Int = partTwo(guards, inputWidth, inputHeight)
 
   private def partTwo(guards: Seq[Guard], width: Int, height: Int, shouldRender: Boolean = false): Int = {
     val seconds = findWithClustering(guards, width, height, treeThreshold)
@@ -85,18 +90,5 @@ object day14 {
 
     val distances = pts.map((x, y) => Math.sqrt(Math.pow(x - ax, 2) + Math.pow(y - ay, 2)))
     distances.sum / distances.size
-  }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day14.txt")
-
-    val guards = parseInput(input)
-
-    val now = System.currentTimeMillis()
-    val result = partTwo(guards, inputWidth, inputHeight, true)
-    val taken = System.currentTimeMillis() - now
-
-    println(s"Seconds: $result")
-    println(s"Runtime: $taken ms")
   }
 }

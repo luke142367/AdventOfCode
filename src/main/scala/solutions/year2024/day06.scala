@@ -1,6 +1,7 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.Year.Year24
+import utils.{Day, Year}
 
 import scala.annotation.tailrec
 
@@ -12,7 +13,7 @@ enum Direction(val dx: Int, val dy: Int):
     case Down => Left
     case Right => Down
     case Left => Up
-  
+
   case Up extends Direction(0, -1)
   case Down extends Direction(0, 1)
   case Right extends Direction(1, 0)
@@ -39,7 +40,7 @@ object Cell {
 
 case class Location(x: Int, y: Int, direction: Direction)
 
-object daySix {
+object day06 extends Day[(Seq[Seq[Cell]], Location), Int, Int](Year24, 6) {
   private val sample = """....#.....
                          |.........#
                          |..........
@@ -50,17 +51,6 @@ object daySix {
                          |........#.
                          |#.........
                          |......#...""".stripMargin
-
-  private val followed = """....#.....
-                           |....XXXXX#
-                           |....X...X.
-                           |..#.X...X.
-                           |..XXXXX#X.
-                           |..X.X.X.X.
-                           |.#XXXXXXX.
-                           |.XXXXXXX#.
-                           |#XXXXXXX..
-                           |......#X..""".stripMargin
 
 
   def parseInput(input: String): (Seq[Seq[Cell]], Location) = {
@@ -106,16 +96,11 @@ object daySix {
     computePath(grid, newLocation, newPath)
   }
 
-  private def partOne(grid: Seq[Seq[Cell]], start: Location): Int = {
-    val path = computePath(grid, start)
-    path.distinctBy(loc => (loc.x, loc.y)).size
-  }
+  override def partOne(input: (Seq[Seq[Cell]], Location)): Int = input match
+    case (grid, start) => computePath(grid, start).distinctBy(loc => (loc.x, loc.y)).size
 
-  private def partTwo(grid: Seq[Seq[Cell]], start: Location): Int = {
-    val path = computePath(grid, start)
-
-    getLoops(grid, path.tail, path.tail.head)
-  }
+  override def partTwo(input: (Seq[Seq[Cell]], Location)): Int = computePath(input._1, input._2) match
+    case path => getLoops(input._1, path.tail, path.tail.head)
 
   private def getLoops(grid: Seq[Seq[Cell]], path: Seq[Location], start: Location): Int = {
     if (path.isEmpty) return 0
@@ -129,18 +114,5 @@ object daySix {
     }
     val nextPath = path.dropWhile(loc => (loc.x, loc.y) == (x, y))
     loop + getLoops(grid, nextPath, path.head)
-  }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day6.txt")
-
-    val (grid, start) = parseInput(input)
-
-    val now = System.currentTimeMillis()
-    val result = partTwo(grid, start)
-    val taken = System.currentTimeMillis() - now
-
-    println(result)
-    println(taken)
   }
 }

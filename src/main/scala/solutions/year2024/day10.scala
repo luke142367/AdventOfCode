@@ -1,13 +1,13 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.{Day, Year}
+import utils.Year.Year24
 
 import scala.annotation.tailrec
 
 case class Topo(x: Int, y: Int, height: Int)
 
-object dayTen {
-
+object day10 extends Day[Seq[Seq[Int]], Int, Int](Year24, 10) {
   private val sample = """89010123
                          |78121874
                          |87430965
@@ -17,7 +17,7 @@ object dayTen {
                          |01329801
                          |10456732""".stripMargin
 
-  private def parseInput(input: String): Seq[Seq[Int]] = input.linesIterator.map(_.toList.map(_.toString.toInt)).toSeq
+  def parseInput(input: String): Seq[Seq[Int]] = input.linesIterator.map(_.toList.map(_.toString.toInt)).toSeq
 
   private def computeTopos(grid: Seq[Seq[Int]]): Set[Topo] = {
     grid.zipWithIndex.flatMap((line, y) =>
@@ -45,23 +45,9 @@ object dayTen {
     computeTrailheads(topos, height - 1, adjacents)
   }
 
-  private def partOne(grid: Seq[Seq[Int]]): Int = {
+  def partOne(grid: Seq[Seq[Int]]): Int = {
     val topos = computeTopos(grid)
 
     computeTrailheads(topos, 9, topos.filter(_.height == 9).map(topo => (topo, 1)))
-  }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day10.txt")
-
-    val grid = parseInput(input)
-
-
-    val now = System.currentTimeMillis()
-    val result = partOne(grid)
-    val taken = System.currentTimeMillis() - now
-
-    println(result)
-    println(s"Runtime: $taken ms")
   }
 }

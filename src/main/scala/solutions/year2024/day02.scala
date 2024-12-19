@@ -1,8 +1,10 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.Day
+import utils.Year.Year24
 
-object day2 {
+object day02 extends Day[Seq[Seq[Int]], Int, Int](Year24, 2) {
+  
   private def isSafe(levels: Seq[Int]): Boolean = {
     val sortedLevels = levels.sorted
     if (sortedLevels != levels && sortedLevels != levels.reverse) {
@@ -14,9 +16,9 @@ object day2 {
 
   private def isSafer(levels: Seq[Int]): Boolean = isSafe(levels) || variations(levels).exists(isSafe)
 
-  private def partOne(input: Seq[Seq[Int]]): Int = input.count(isSafe)
+  override def partOne(input: Seq[Seq[Int]]): Int = input.count(isSafe)
 
-  private def partTwo(input: Seq[Seq[Int]]): Int = input.count(isSafer)
+  override def partTwo(input: Seq[Seq[Int]]): Int = input.count(isSafer)
 
   private def variations(levels: Seq[Int]): Seq[Seq[Int]] =
     levels.indices.map(index => levels.zipWithIndex.filter(p => p._2 != index).map(_._1))
@@ -27,12 +29,5 @@ object day2 {
     lines.map { line =>
       line.split(" ").map(_.toInt)
     }
-  }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day2.txt")
-    val parsed = parseInput(input)
-    val numSafe = partTwo(parsed)
-    println(numSafe)
   }
 }

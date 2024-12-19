@@ -1,11 +1,11 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.Day
+import utils.Year.Year24
 
 import scala.annotation.targetName
 import scala.util.matching.Regex
-import math.min
-import scala.collection.mutable.{Map => MMap}
+import scala.collection.mutable.Map as MMap
 
 case class xy(x: Long, y: Long) {
   @targetName("minus")
@@ -13,7 +13,7 @@ case class xy(x: Long, y: Long) {
 }
 case class Machine(a: xy, b: xy, prize: xy)
 
-object dayThirteen {
+object day13 extends Day[Seq[Machine], Long, Long](Year24, 13) {
   private val sample = """Button A: X+94, Y+34
                          |Button B: X+22, Y+67
                          |Prize: X=8400, Y=5400
@@ -34,7 +34,7 @@ object dayThirteen {
 
   private val partTwoAdd = 10000000000000L
 
-  private def parseInput(input: String): Seq[Machine] = {
+  def parseInput(input: String): Seq[Machine] = {
     input.split("\n\n").map(section =>
       val Seq(a, b, prize) = section.linesIterator.map( line =>
         val Seq(x,y) = inputReg.findAllMatchIn(line).map(_.group(1).toLong).toSeq
@@ -58,20 +58,10 @@ object dayThirteen {
     }
   }
 
-  private def partOne(machines: Seq[Machine]): Long = machines.flatMap(findMinimalTokens).sum
+  override def partOne(machines: Seq[Machine]): Long = machines.flatMap(findMinimalTokens).sum
 
-  private def partTwo(machines: Seq[Machine]): Long = machines
+  override def partTwo(machines: Seq[Machine]): Long = machines
       .map(m => Machine(m.a, m.b, xy(m.prize.x + partTwoAdd, m.prize.y + partTwoAdd)))
       .flatMap(findMinimalTokens)
       .sum
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day13.txt")
-
-    val machines = parseInput(input)
-    
-    val result = partTwo(machines)
-
-    println(result)
-  }
 }

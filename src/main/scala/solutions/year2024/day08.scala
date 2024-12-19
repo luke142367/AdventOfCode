@@ -1,11 +1,12 @@
-package answers
+package solutions.year2024
 
+import utils.{Day, Year}
 import utils.FileHandler.readFile
+import utils.Year.Year24
 
 case class Antenna(x: Int, y: Int, char: Char)
 
-object dayEight {
-
+object day08 extends Day[(Int, Int, Seq[Antenna]), Int, Int](Year24, 8) {
   private val sample = """............
                          |........0...
                          |.....0......
@@ -30,7 +31,7 @@ object dayEight {
                           |....#.....
                           |..........""".stripMargin
 
-  private def parseInput(input: String): (Int, Int, Seq[Antenna]) = {
+  def parseInput(input: String): (Int, Int, Seq[Antenna]) = {
     val antennas = input.linesIterator.zipWithIndex.flatMap((line, y) =>
       line.zipWithIndex.filter((c, x) => c != '.' && c != '#').map((c, x) => Antenna(x, y, c))
     ).toSeq
@@ -75,23 +76,18 @@ object dayEight {
     ).toSet
   }
 
-  private def partOne(height: Int, width: Int, antennas: Seq[Antenna]): Int = antennas
-    .groupBy(_.char)
-    .values
-    .map(computeSignalAntinodes).reduce(_ ++ _)
-    .count((x, y) => x >= 0 && x < width && y >= 0 && y < height)
+  override def partOne(input: (Int, Int, Seq[Antenna])): Int = input match
+    case (height: Int, width: Int, antennas: Seq[Antenna]) => antennas
+      .groupBy(_.char)
+      .values
+      .map(computeSignalAntinodes).reduce(_ ++ _)
+      .count((x, y) => x >= 0 && x < width && y >= 0 && y < height)
 
-  private def partTwo(height: Int, width: Int, antennas: Seq[Antenna]): Int = {
-      antennas.groupBy(_.char).values.map(ants =>
-        computeSignalAntinodes2(ants, height, width)
-      ).reduce(_ ++ _).size
-  }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day8.txt")
-
-    val (height, width, antennas) = parseInput(input)
-
-    println(partTwo(height, width, antennas))
-  }
+  override def partTwo(input: (Int, Int, Seq[Antenna])): Int = input match
+    case (height: Int, width: Int, antennas: Seq[Antenna]) => antennas
+      .groupBy(_.char)
+      .values
+      .map(ants => computeSignalAntinodes2(ants, height, width))
+      .reduce(_ ++ _)
+      .size
 }

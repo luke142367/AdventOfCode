@@ -1,7 +1,7 @@
-package answers
+package solutions.year2024
 
-import answers.Direction.{Down, Up}
-import utils.FileHandler.readFile
+import utils.Day
+import utils.Year.Year24
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ArraySeq as MSeq
@@ -41,7 +41,7 @@ object Space {
     case '@' => Space.Robot
 }
 
-object day15 {
+object day15 extends Day[(MSeq[MSeq[Space]], Seq[Direction]), Int, Int](Year24, 15) {
   private val sample = """##########
                          |#..O..O.O#
                          |#......O.#
@@ -85,7 +85,7 @@ object day15 {
                           |
                           |<vv<<^^<<^^""".stripMargin
 
-  private def parseInput(input: String): (MSeq[MSeq[Space]], Seq[Direction]) = {
+  def parseInput(input: String): (MSeq[MSeq[Space]], Seq[Direction]) = {
     val Seq(gridInput, movesInput) = input.split("\n\n").toSeq
     val moves = movesInput.filter(_ != '\n').map(Direction.fromChar)
     val grid = MSeq(gridInput.linesIterator.map(line => MSeq(line.toList.map(Space.fromChar):_*)).toSeq:_*)
@@ -168,26 +168,16 @@ object day15 {
   private def render(grid : MSeq[MSeq[Space]]): Unit =
     println(grid.map(row => row.map(_.toChar).mkString).mkString("\n"))
 
-  private def partOne(grid: MSeq[MSeq[Space]], moves: Seq[Direction]): Int = {
-    val (x, y) = findRobot(grid)
-    updateGrid(grid, x, y, moves)
-    calculateGPS(grid)
-  }
-  
-  private def partTwo(grid: MSeq[MSeq[Space]], moves: Seq[Direction]): Int = {
-    val widenedGrid = grid.map(row => row.flatMap(_.widened))
-    val (x, y) = findRobot(widenedGrid)
-    updateGrid2(widenedGrid, x, y, moves)
-    calculateGPS(widenedGrid)
-  }
+  override def partOne(input: (MSeq[MSeq[Space]], Seq[Direction])): Int = input match
+    case (grid: MSeq[MSeq[Space]], moves: Seq[Direction]) =>
+      val (x, y) = findRobot(grid)
+      updateGrid(grid, x, y, moves)
+      calculateGPS(grid)
 
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day15.txt")
-    
-    val resultOne = partOne.tupled(parseInput(input))
-    val resultTwo = partTwo.tupled(parseInput(input))
-    
-    println(s"Result One: $resultOne")
-    println(s"Result Two: $resultTwo")
-  }
+  override def partTwo(input: (MSeq[MSeq[Space]], Seq[Direction])): Int = input match
+    case (grid: MSeq[MSeq[Space]], moves: Seq[Direction]) =>
+      val widenedGrid = grid.map(row => row.flatMap(_.widened))
+      val (x, y) = findRobot(widenedGrid)
+      updateGrid2(widenedGrid, x, y, moves)
+      calculateGPS(widenedGrid)
 }

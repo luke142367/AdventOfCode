@@ -1,15 +1,15 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.{Day, Year}
+import utils.Year.Year24
 
 case class File(size: Int, id: Int)
 
-object dayNine {
+object day09 extends Day[(Seq[File], Seq[Int]), Long, Long](Year24, 9) {
   private val sample = "2333133121414131402"
-
   private val sample2 = "4083766302"
 
-  private def parseInput(input: String): (Seq[File], Seq[Int]) = {
+  def parseInput(input: String): (Seq[File], Seq[Int]) = {
     val (files, spaces) = input.zipWithIndex.partition(_._2 % 2 == 0)
     (files.map(_._1).zipWithIndex.map((c, id) => File(c.toString.toInt, id)), spaces.map(_._1.toString.toInt))
   }
@@ -27,27 +27,10 @@ object dayNine {
     case Seq() => 0
     case f::fs => (0 until f.size).map(i => (i + index) * f.id).sum + calculateChecksum(files.tail, index + f.size)
 
-  private def partOne(files: Seq[File], spaces: Seq[Int]): Long = {
-    val fileSize = files.map(_.size.toLong).sum
-
-    val compressed = compressFiles(files.toList, files.reverse.toList, spaces.toList, fileSize)
-
-    val check = compressed.groupBy(_.id).map((id, files) => File(files.map(_.size).sum, id)).toSeq.sortBy(_.id)
-
-    calculateChecksum(compressed)
-  }
-
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day9.txt")
-
-    val (files, spaces) = parseInput(input)
-
-    val now = System.currentTimeMillis()
-    val result = partOne(files.filter(_.size != 0), spaces)
-    val taken = System.currentTimeMillis() - now
-
-    println(result)
-    println(s"Runtime: $taken ms")
-  }
+  override def partOne(input: (Seq[File], Seq[Int])): Long = input match
+    case (files, spaces) =>
+      val fileSize = files.map(_.size.toLong).sum
+      val compressed = compressFiles(files.toList, files.reverse.toList, spaces.toList, fileSize)
+      val check = compressed.groupBy(_.id).map((id, files) => File(files.map(_.size).sum, id)).toSeq.sortBy(_.id)
+      calculateChecksum(compressed)
 }

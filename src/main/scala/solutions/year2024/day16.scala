@@ -1,7 +1,8 @@
-package answers
+package solutions.year2024
 
-import answers.Direction.Up
-import utils.FileHandler.readFile
+import day16.Cell
+import utils.Day
+import utils.Year.Year24
 
 import scala.collection.mutable.Map as MMap
 import scala.collection.mutable.PriorityQueue as PQ
@@ -16,7 +17,7 @@ case class Position(x: Int, y: Int, dir: Direction) {
 
 case class WeightedPosition(position: Position, weight: Int, route: Seq[Position])
 
-object day16 {
+object day16 extends Day[Seq[Seq[Cell]], Int, Int](Year24, 16) {
   enum Cell:
     case Wall
     case Empty
@@ -78,7 +79,7 @@ object day16 {
                           |#S#.............#
                           |#################""".stripMargin
 
-  private def parseInput(input: String): Seq[Seq[Cell]] = input.linesIterator.map(_.toList.map(Cell.fromChar)).toSeq
+  def parseInput(input: String): Seq[Seq[Cell]] = input.linesIterator.map(_.toList.map(Cell.fromChar)).toSeq
 
   private def findStart(grid: Seq[Seq[Cell]]): Position = {
     val (x, y) = grid.indices.flatMap(y => grid(y).indices.flatMap(x => if (grid(y)(x) == Cell.Start) Some((x, y)) else None)).head
@@ -113,19 +114,7 @@ object day16 {
     positions.filter(pos => pos.weight == lowest && pos.position == end).toSeq
   }
 
-  private def partOne(grid: Seq[Seq[Cell]]): Int = bfs(grid).head.weight
+  override def partOne(grid: Seq[Seq[Cell]]): Int = bfs(grid).head.weight
 
-  private def partTwo(grid: Seq[Seq[Cell]]): Int = bfs(grid).flatMap(_.route.map(pos => (pos.x, pos.y))).toSet.size
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day16.txt")
-
-    val grid = parseInput(input)
-
-    val resultOne = partOne(grid)
-    val resultTwo = partTwo(grid)
-
-    println(s"Result One: $resultOne")
-    println(s"Result Two: $resultTwo")
-  }
+  override def partTwo(grid: Seq[Seq[Cell]]): Int = bfs(grid).flatMap(_.route.map(pos => (pos.x, pos.y))).toSet.size
 }

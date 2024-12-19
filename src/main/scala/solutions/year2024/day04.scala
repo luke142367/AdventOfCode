@@ -1,10 +1,11 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.{Day, Year}
+import utils.Year.Year24
 
 import scala.util.matching.Regex
 
-object day4 {
+object day04 extends Day[Seq[Seq[Char]], Int, Int](Year24, 4) {
   private val xmasSearch = "XMAS".r
   private val samxSearch = "SAMX".r
 
@@ -14,7 +15,7 @@ object day4 {
 
   private def countXmas(input: String) = countOccurrences(input, xmasSearch) + countOccurrences(input, samxSearch)
 
-  private def partOne(grid: Seq[Seq[Char]]): Int = {
+  def partOne(grid: Seq[Seq[Char]]): Int = {
     val horizontals = grid
     val verticals = grid.transpose
     val diagRight = diagonals(grid)
@@ -23,7 +24,7 @@ object day4 {
     (horizontals ++ verticals ++ diagRight ++ diagLeft).map(line => countXmas(line.mkString)).sum
   }
 
-  private def partTwo(grid: Seq[Seq[Char]]): Int = slidingWindow(grid).count(hasCrossMas)
+  override def partTwo(grid: Seq[Seq[Char]]): Int = slidingWindow(grid).count(hasCrossMas)
 
   private def hasCrossMas(grid: Seq[Seq[Char]]): Boolean = {
     (masses contains diagonals(grid).filter(_.size == 3).head.mkString) &&
@@ -55,14 +56,5 @@ object day4 {
                          |MAMMMXMMMM
                          |MXMXAXMASX""".stripMargin
 
-  private def parseInput(input: String): Seq[Seq[Char]] = input.lines.toSeq.map(_.toList)
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day4.txt")
-    val now = System.currentTimeMillis()
-    val count = partOne(parseInput(input))
-    val taken = System.currentTimeMillis() - now
-    println(count)
-    println(taken)
-  }
+  def parseInput(input: String): Seq[Seq[Char]] = input.lines.toSeq.map(_.toList)
 }

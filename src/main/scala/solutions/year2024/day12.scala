@@ -1,10 +1,11 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
-import scala.collection.mutable.{Set => MSet}
+import utils.{Day, Year}
+import utils.Year.Year24
 
-object day12 {
+import scala.collection.mutable.Set as MSet
 
+object day12 extends Day[Seq[Seq[Char]], Int, Int](Year24, 12) {
   private val sample = """AAAA
                          |BBCD
                          |BBCC
@@ -34,14 +35,14 @@ object day12 {
                           |ABBAAA
                           |AAAAAA""".stripMargin
 
-  private def parseInput(input: String): Seq[Seq[Char]] = input.lines.map(_.toList.toSeq).toSeq
+  def parseInput(input: String): Seq[Seq[Char]] = input.lines.map(_.toList.toSeq).toSeq
 
   private def searchArea(x: Int, y: Int, c: Char, grid: Seq[Seq[Char]], visited: MSet[(Int, Int)] = MSet()): Set[(Int, Int)] = {
     if (x < 0 || y < 0 || x >= grid.head.size || y >= grid.size || grid(y)(x) != c) return Set()
     if (visited.contains((x, y))) return Set((x, y))
     visited.add((x, y))
 
-    val adj = Set((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)).diff(visited)
+    val adj = (x, y).adjacents().diff(visited)
     adj.flatMap((x, y) => searchArea(x, y, c, grid, visited)) ++ Set((x, y))
   }
 
@@ -57,7 +58,7 @@ object day12 {
   }
 
   private def perimeter(area: Set[(Int, Int)]): Int =
-    area.toSeq.map((x, y) => Set((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)).diff(area).size).sum
+    area.toSeq.map(pt => pt.adjacents().diff(area).size).sum
 
   private def sides(area: Set[(Int, Int)]): Int = {
     val tops = area.filter((x, y) => !area.contains((x, y - 1))).groupBy(_._2).values.map(x => countContig(x.toSeq.map(_._1))).sum
@@ -72,30 +73,21 @@ object day12 {
     case Seq(_) => 1
     case _ => nums.sorted.sliding(2).count{case Seq(a, b) => (a - b).abs != 1} + 1
 
-  private def partOne(grid: Seq[Seq[Char]]): Int = {
+  override def partOne(grid: Seq[Seq[Char]]): Int = {
     val areas = findAreas(grid)
     areas.toSeq.map((_, pts) =>
       pts.size * perimeter(pts)
     ).sum
   }
 
-  private def partTwo(grid: Seq[Seq[Char]]): Int = {
+  override def partTwo(grid: Seq[Seq[Char]]): Int = {
     val areas = findAreas(grid)
     areas.toSeq.map((_, pts) =>
       pts.size * sides(pts)
     ).sum
   }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day12.txt")
-
-    val grid = parseInput(input)
-
-    val now = System.currentTimeMillis()
-    val result = partTwo(grid)
-    val taken = System.currentTimeMillis() - now
-
-    println(result)
-    println(s"Runtime: $taken ms")
-  }
 }
+
+extension (pt: (Int, Int))
+  def adjacents(): Set[(Int, Int)] = pt match
+    case (x, y) => Set((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1))

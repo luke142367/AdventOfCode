@@ -1,8 +1,9 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
+import utils.{Day, Year}
+import utils.Year.Year24
 
-object day5 {
+object day05 extends Day[(Seq[(Int, Int)], Seq[Seq[Int]]), Int, Int](Year24, 5) {
   private val orderRegex = "(\\d+)\\|(\\d+)".r
 
   private val sample: String = """47|53
@@ -42,31 +43,24 @@ object day5 {
 
   private def middlePage(pages: Seq[Int]): Int = pages(pages.size / 2)
 
-  private def partOne(orders: Seq[(Int, Int)], pages: Seq[Seq[Int]]): Int =
+  private def calculate(orders: Seq[(Int, Int)], pages: Seq[Seq[Int]], comparator: ((Seq[Int], Seq[Int])) => Boolean): Int =
     pages
       .map(ps => buildCorrectOrdering(orders, ps.toSet))
       .zip(pages)
-      .filter((a,b) => a != b)
+      .filter(comparator)
       .map(_._1)
       .map(middlePage)
       .sum
 
-  private def parseInput(input: String): (Seq[(Int, Int)], Seq[Seq[Int]]) = {
+  override def partOne(input: (Seq[(Int, Int)], Seq[Seq[Int]])): Int = input match
+    case (orders, pages) => calculate(orders, pages, (a, b) => a == b)
+
+  override def partTwo(input: (Seq[(Int, Int)], Seq[Seq[Int]])): Int = input match
+    case (orders, pages) => calculate(orders, pages, (a, b) => a != b)
+
+  def parseInput(input: String): (Seq[(Int, Int)], Seq[Seq[Int]]) = {
     val orderPairs = orderRegex.findAllMatchIn(input).map(m => (m.group(1).toInt, m.group(2).toInt)).toSeq
     val pageSets = input.linesIterator.toSeq.filter(_.contains(",")).map(_.split(",").toSeq).map(_.map(_.toInt))
     (orderPairs, pageSets)
-  }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day5.txt")
-
-    val (orders, pages) = parseInput(input)
-
-    val now = System.currentTimeMillis()
-    val result = partOne(orders, pages)
-    val taken = System.currentTimeMillis() - now
-
-    println(result)
-    println(s"Took $taken ms")
   }
 }

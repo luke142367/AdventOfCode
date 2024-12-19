@@ -1,13 +1,15 @@
-package answers
+package solutions.year2024
 
+import utils.Day
 import utils.FileHandler.readFile
+import utils.Year.Year24
 
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.collection.mutable.PriorityQueue as PQ
 import scala.collection.mutable.Set as MSet
 
-object day18 {
+object day18 extends Day[Seq[(Int, Int)], Int, (Int, Int)](Year24, 18) {
   enum Cell:
     case Wall
     case Empty
@@ -48,7 +50,7 @@ object day18 {
 
   private val inputRegex = "(\\d+),(\\d+)".r
 
-  private def parseInput(input: String): Seq[(Int, Int)] =
+  def parseInput(input: String): Seq[(Int, Int)] =
     input.linesIterator.map(line =>
       val List(x,y) = inputRegex.findFirstMatchIn(line).get.subgroups.map(_.toInt)
       (x, y)
@@ -89,24 +91,13 @@ object day18 {
     if (shortest.isDefined) findLast(corruptions, size, middle, fail) else findLast(corruptions, size, pass, middle)
   }
 
-  private def partOne(corruptions: Seq[(Int, Int)]): Int = {
+  override def partOne(corruptions: Seq[(Int, Int)]): Int = {
     val grid = generateGrid(corruptions.take(inputSize), inputSize)
     shortestPath((0,0), (inputSize, inputSize), grid).get
   }
 
-  private def partTwo(corruptions: Seq[(Int, Int)]): (Int, Int) = {
+  override def partTwo(corruptions: Seq[(Int, Int)]): (Int, Int) = {
     val last = findLast(corruptions, inputSize, 0, corruptions.size)
     corruptions(last - 1)
-  }
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day18.txt")
-    val corruptions = parseInput(input)
-
-    val resultOne = partOne(corruptions)
-    val resultTwo = partTwo(corruptions)
-
-    println(s"Result One: $resultOne")
-    println(s"Result Two: $resultTwo")
   }
 }

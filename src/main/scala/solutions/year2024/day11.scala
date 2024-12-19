@@ -1,12 +1,14 @@
-package answers
+package solutions.year2024
 
-import utils.FileHandler.readFile
-import scala.collection.mutable.{Map => MMap}
+import utils.{Day, Year}
+import utils.Year.Year24
 
-object day11 {
+import scala.collection.mutable.Map as MMap
+
+object day11 extends Day[Seq[Long], Long, Long](Year24, 11) {
   private val sample = "125 17"
 
-  private def parseInput(input: String) = input.split(" ").map(_.toLong).toSeq
+  def parseInput(input: String): Seq[Long] = input.split(" ").map(_.toLong).toSeq
 
   private def splitStone(stone: Long): Seq[Long] = stone match
     case 0 => Seq(1)
@@ -24,15 +26,7 @@ object day11 {
     ).sum
   }
 
-  private def partOne(stones: Seq[Long]): Long = splitStones(stones, MMap(), 25)
+  override def partOne(stones: Seq[Long]): Long = splitStones(stones, MMap(), 25)
 
-  private def partTwo(stones: Seq[Long]): Long = splitStones(stones, MMap(), 75)
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day11.txt")
-    val stones = parseInput(input)
-
-    println(s"Part One: ${partOne(stones)}")
-    println(s"Part Two: ${partTwo(stones)}")
-  }
+  override def partTwo(stones: Seq[Long]): Long = splitStones(stones, MMap(), 75)
 }

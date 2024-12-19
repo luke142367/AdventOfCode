@@ -1,8 +1,10 @@
-package answers
+package solutions.year2024
 
+import utils.Day
 import utils.FileHandler.readFile
-import scala.collection.mutable.PriorityQueue as PQ
+import utils.Year.Year24
 
+import scala.collection.mutable.PriorityQueue as PQ
 import scala.annotation.tailrec
 
 case class Registers(a: Long, b: Long, c: Long)
@@ -66,7 +68,7 @@ case class OUT(operand: Int) extends Instr:
     (registers, (this.combo(registers) % 8).toInt +: out, ptr + 1)
 
 
-object day17 {
+object day17 extends Day[(Registers, Seq[Int]), String, Long](Year24, 17) {
   private val sample = """Register A: 729
                          |Register B: 0
                          |Register C: 0
@@ -82,7 +84,7 @@ object day17 {
   private val registerRegex = "Register \\w: (\\d+)".r
   private val programRegex = "Program: ([\\d,]+)".r
 
-  private def parseInput(input: String): (Registers, Seq[Int]) = {
+  def parseInput(input: String): (Registers, Seq[Int]) = {
     val Seq(regInput, programInput) = input.split("\n\n").toSeq
     val Seq(a, b, c) = registerRegex.findAllMatchIn(regInput).map(_.group(1).toLong).toSeq
     val program = programRegex.findFirstMatchIn(programInput).get.group(1).split(",").map(_.toInt).toSeq
@@ -101,41 +103,29 @@ object day17 {
     compute(updatedRegisters, instructions, updatedOut, updatedPtr)
   }
 
-  private def partOne(registers: Registers, program: Seq[Int]): String =
-    compute(registers, parseProgram(program)).mkString(",")
+  override def partOne(input: (Registers, Seq[Int])): String = input match
+    case (registers: Registers, program: Seq[Int]) => compute(registers, parseProgram(program)).mkString(",")
 
-  private def partTwo(registers: Registers, program: Seq[Int]): Long = {
-    val instructions = parseProgram(program)
-    val starts = PQ[Long](0)(Ordering.Long.reverse)
+  override def partTwo(input: (Registers, Seq[Int])): Long = input match
+    case (registers: Registers, program: Seq[Int]) => {
+      val instructions = parseProgram(program)
+      val starts = PQ[Long](0)(Ordering.Long.reverse)
 
-    while (starts.nonEmpty) {
-      val lowest = starts.dequeue()
+      while (starts.nonEmpty) {
+        val lowest = starts.dequeue()
 
-      // The program divides A by 8 each loop. Given this is integer division we know the previous value is from 8 times up to the next multiple
-      (lowest * 8 until (lowest + 1) * 8).foreach(start =>
-        val result = compute(registers.copy(a = start), instructions)
+        // The program divides A by 8 each loop. Given this is integer division we know the previous value is from 8 times up to the next multiple
+        (lowest * 8 until (lowest + 1) * 8).foreach(start =>
+          val result = compute(registers.copy(a = start), instructions)
 
-        if (result == program) return start
+          if (result == program) return start
 
-        if (program.takeRight(result.size) == result) {
-          starts += start
-        }
-      )
+          if (program.takeRight(result.size) == result) {
+            starts += start
+          }
+        )
+      }
+
+      throw Exception("No identity start found")
     }
-
-    throw Exception("No identity start found")
-  }
-
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day17.txt")
-
-    val (registers, instructions) = parseInput(input)
-
-    val resultOne = partOne(registers, instructions)
-    val resultTwo = partTwo(registers, instructions)
-
-    println(s"Result One: $resultOne")
-    println(s"Result Two: $resultTwo")
-  }
 }

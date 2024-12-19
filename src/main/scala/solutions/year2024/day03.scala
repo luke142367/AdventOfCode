@@ -1,16 +1,18 @@
-package answers
+package solutions.year2024
 
+import utils.{Day, Year}
 import utils.FileHandler.readFile
+import utils.Year.Year24
 
 import scala.util.matching.Regex
 
-object day3 {
+object day03 extends Day[String, Int, Int](Year24, 3) {
   private val regexOne: Regex = "mul\\((\\d{1,3}),(\\d{1,3})\\)".r
   private val regexTwo: Regex = "mul\\((\\d{1,3}),(\\d{1,3})\\)|do\\(\\)|don't\\(\\)".r
 
-  private val sampleTwo = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
+  private val sampleTwo: String = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 
-  private def partOne(input: String): Int = regexOne.findAllMatchIn(input).map(m => m.group(1).toInt * m.group(2).toInt).sum
+  def partOne(input: String): Int = regexOne.findAllMatchIn(input).map(m => m.group(1).toInt * m.group(2).toInt).sum
 
   private def partTwo1(input: String): Int = {
     val matches = regexTwo.findAllMatchIn(input)
@@ -27,7 +29,7 @@ object day3 {
     }.sum
   }
 
-  private def partTwo2(input: String): Int = {
+  override def partTwo(input: String): Int = {
     val matches = regexTwo.findAllMatchIn(input)
     val donts = split(matches.toSeq, m => m.group(0) == "don't()")
 
@@ -50,11 +52,5 @@ object day3 {
       case (m, Seq()) => if matcher(m) then Seq() else Seq(Seq(m))
     }
 
-
-  def main(args: Array[String]): Unit = {
-    val input = readFile("day3.txt")
-
-    val result = partTwo3(input)
-    println(result)
-  }
+  override def parseInput(input: String): String = input
 }
