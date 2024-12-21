@@ -42,7 +42,7 @@ object day12 extends Day[Seq[Seq[Char]], Int, Int](Year24, 12) {
     if (visited.contains((x, y))) return Set((x, y))
     visited.add((x, y))
 
-    val adj = (x, y).adjacents().diff(visited)
+    val adj = (x, y).adjacents(grid.size, grid.head.size).diff(visited)
     adj.flatMap((x, y) => searchArea(x, y, c, grid, visited)) ++ Set((x, y))
   }
 
@@ -91,3 +91,9 @@ object day12 extends Day[Seq[Seq[Char]], Int, Int](Year24, 12) {
 extension (pt: (Int, Int))
   def adjacents(): Set[(Int, Int)] = pt match
     case (x, y) => Set((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1))
+
+  def adjacents(height: Int, width: Int): Set[(Int, Int)] =
+    pt.adjacents().filter((x, y) => x >= 0 && y >= 0 && x < width && y < height)
+
+  def distance(other: (Int, Int)): Int = other match
+    case (x, y) => (pt._1 - x).abs + (pt._2 - y).abs

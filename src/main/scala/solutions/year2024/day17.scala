@@ -1,7 +1,6 @@
 package solutions.year2024
 
 import utils.Day
-import utils.FileHandler.readFile
 import utils.Year.Year24
 
 import scala.collection.mutable.PriorityQueue as PQ
