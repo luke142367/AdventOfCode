@@ -8,6 +8,12 @@ import scala.annotation.tailrec
 case class LoopException() extends Exception("Loop!!!")
 
 enum Direction(val dx: Int, val dy: Int):
+  def toChar: Char = this match
+    case Up => '^'
+    case Down => 'v'
+    case Right => '>'
+    case Left => '<'
+
   def turnRight: Direction = this match
     case Up => Right
     case Down => Left

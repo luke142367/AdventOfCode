@@ -3,6 +3,7 @@ package solutions.year2024
 import utils.{Day, Year}
 import utils.Year.Year24
 
+import scala.annotation.targetName
 import scala.collection.mutable.Set as MSet
 
 object day12 extends Day[Seq[Seq[Char]], Int, Int](Year24, 12) {
@@ -97,3 +98,7 @@ extension (pt: (Int, Int))
 
   def distance(other: (Int, Int)): Int = other match
     case (x, y) => (pt._1 - x).abs + (pt._2 - y).abs
+    
+  @targetName("plus")
+  def +(other: (Int, Int)): (Int, Int) = other match
+    case (a, b) => (pt._1 + a, pt._2 + b)
